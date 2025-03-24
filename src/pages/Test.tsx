@@ -16,8 +16,9 @@ import { WriteContractPrepared } from '@/components/WriteContractPrepared.tsx';
 import { useEthereum } from '@/services/ethereum/context.ts';
 import styles from '@/styles/home.module.css';
 
-export function Home() {
+export function Test() {
   const { account } = useEthereum();
+  console.log('karan', process.env.NODE_ENV);
 
   return (
     <main className={styles.home}>

@@ -1,4 +1,5 @@
-import { Home } from '@/components/Home.tsx';
+import Home from '@/pages/Home';
+import { Test } from '@/pages/Test';
 // import Home from '@/pages/Home.tsx';
 import { EthereumContextProvider } from '@/services/ethereum/EthereumContext.tsx';
 import { BrowserRouter, Routes, Route } from 'react-router';
@@ -11,6 +12,7 @@ export function App() {
         <Navigation />
         <Routes>
           <Route path='/' element={<Home />} />
+          <Route path='/test' element={<Test />} />
         </Routes>
       </BrowserRouter>
     </EthereumContextProvider>
