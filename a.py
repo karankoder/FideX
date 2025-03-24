@@ -508,7 +508,7 @@ contract = w3.eth.contract(address=contract_address, abi=contract_abi)
 # Call a read function
 print(dir(contract.functions.getBusinesses()))
 # for view function
-result = contract.functions.getBusinesses.call()
+result = contract.functions.getBusinesses().call()
 nonce = w3.eth.get_transaction_count(account.address)
 
 # Call a write function
