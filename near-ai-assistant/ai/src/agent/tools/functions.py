@@ -7,7 +7,7 @@ from eth_account import Account
 
 from config import env
 
-contract_abi = '''[
+contract_abi = ''' [
     {
       "inputs": [],
       "stateMutability": "nonpayable",
@@ -245,6 +245,84 @@ contract_abi = '''[
         }
       ],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint16",
+          "name": "businessHash",
+          "type": "uint16"
+        }
+      ],
+      "name": "getBusinesInfo",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "rewardThreshold",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "rewardAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "isActive",
+              "type": "bool"
+            },
+            {
+              "internalType": "address",
+              "name": "paymentAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "businessContext",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "productPrice",
+              "type": "uint256"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "string",
+                  "name": "name",
+                  "type": "string"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "price",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct FedX.Products[]",
+              "name": "products",
+              "type": "tuple[]"
+            }
+          ],
+          "internalType": "struct FedX.Business",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -568,7 +646,7 @@ contract_abi = '''[
   ]
   '''
 
-contract_address="0xf382dED7F34156A648f82740aae3965fdAcd87F9"
+contract_address="0xcA3A2513fD277DF13b0F46FC8ED810dd8878f00A"
 provider = Web3(Web3.HTTPProvider(env.zksync_rpc_url))
 account = Account.from_key(env.private_key)
 contract = provider.eth.contract(address=contract_address, abi=contract_abi)
@@ -666,8 +744,7 @@ async def get_business_register_raw()->str:
     signed_txn = provider.eth.account.sign_transaction(txn, env.private_key)
     tx_hash = provider.eth.send_raw_transaction(signed_txn.raw_transaction)
     receipt = provider.eth.wait_for_transaction_receipt(tx_hash)
-    print(tx_hash)
-    print(tx_hash.hex())
+    
     if receipt.status == 1:
         return f"Event emitted for registering a business with eventId : {tx_hash.hex()},Please sign the transaction"
     else:
