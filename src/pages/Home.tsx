@@ -22,19 +22,27 @@ const Home: FC = () => {
           instantly on the blockchain
         </div>
         <div className='flex gap-10'>
-          <Ripples className='rounded-xl' color='rgba(255, 255, 255, 0.4)' during={1000}>
+          <Ripples
+            className='rounded-xl text-inherit'
+            color='rgba(255, 255, 255, 0.4)'
+            during={1000}
+          >
             <button
               className='bg-[#8A2BE2] font-semibold text-[#F0F0F0] text-xl px-8 py-5 rounded-xl cursor-pointer 
                    shadow-lg shadow-[#8A2BE2]/50 transition-all duration-300 ease-in-out 
                    hover:bg-[#7a26c9] hover:shadow-[#8A2BE2]/60
                    active:shadow-md relative overflow-hidden'
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/launch')}
             >
               Launch Loyalty Program
             </button>
           </Ripples>
 
-          <Ripples className='rounded-xl' color='rgba(255, 255, 255, 0.3)' during={1000}>
+          <Ripples
+            className='rounded-xl text-inherit'
+            color='rgba(255, 255, 255, 0.3)'
+            during={1000}
+          >
             <button
               className='bg-[#FFAA00] font-semibold text-[#0A192F] text-xl px-17 py-5 rounded-xl cursor-pointer 
                    shadow-lg shadow-[#FFAA00]/40 transition-all duration-300 ease-in-out
