@@ -1,20 +1,50 @@
-import { useState, useRef, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { FaRobot, FaUser, FaTrophy, FaDollarSign, FaTag } from 'react-icons/fa';
 
+interface Message {
+  id?: string;
+  content: string;
+}
+
+interface MessageGroup {
+  id?: string;
+  author: 'ai' | 'user';
+  messages: Message[];
+}
+
+interface Business {
+  name: string;
+  owner: string;
+  reward_threshold: string;
+  reward_amount: string;
+  product_price: string;
+}
+
 export default function Checkout() {
-  const [input, setInput] = useState('');
-  const [messageGroups, setMessageGroups] = useState([
+  const [input, setInput] = useState<string>('');
+  const [messageGroups, setMessageGroups] = useState<MessageGroup[]>([
     {
       author: 'ai',
       messages: [{ content: 'Hi there, how can I help you?' }],
     },
   ]);
-  const [business, setBusiness] = useState([]);
+  const [business, setBusiness] = useState<Business | null>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
   const businessHash = new URLSearchParams(location.search).get('businessHash');
+
+  useEffect(() => {
+    // Dummy business data for demo purposes
+    setBusiness({
+      name: 'Demo Business',
+      owner: '0x1234567890abcdef1234567890abcdef12345678',
+      reward_threshold: '500 points',
+      reward_amount: '$50',
+      product_price: '$20',
+    });
+  }, []);
 
   return (
     <div

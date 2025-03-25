@@ -3,7 +3,6 @@ import LoyaltyForm from '@/components/LoyaltyForm';
 import { useNavigate } from 'react-router';
 import { FormEvent, useCallback } from 'react';
 import { useEthereum } from '@/services/ethereum/context.ts';
-import { useAsync } from '@/hooks/use-async.ts';
 import { daiContractConfig } from '@/services/contracts.ts';
 
 export default function Launch() {
@@ -15,11 +14,24 @@ export default function Launch() {
   const [productPrice, setProductPrice] = useState<string>('');
   const [paymentAddress, setPaymentAddress] = useState<string>('');
   const { account, getZKsync } = useEthereum();
-  const zkSync = getZKsync();
   const navigate = useNavigate();
+  const [products, setProducts] = useState<{ name: string; price: string }[]>([
+    { name: '', price: '' },
+  ]);
+
+  const addProduct = () => {
+    setProducts([...products, { name: '', price: '' }]);
+  };
+
+  const updateProduct = (index: number, field: 'name' | 'price', value: string) => {
+    const updatedProducts = [...products];
+    updatedProducts[index][field] = value;
+    setProducts(updatedProducts);
+  };
 
   const registerBusiness = async () => {
     try {
+      const zkSync = getZKsync();
       if (!zkSync) {
         console.error('Provider not found');
         return;
@@ -38,7 +50,7 @@ export default function Launch() {
         .send({ from: account.address || '' });
 
       console.log('Success:', receipt);
-      // navigate(`/success?businessHash=${receipt.transactionHash}`);
+      navigate(`/success?businessHash=${receipt.transactionHash}`);
     } catch (error) {
       console.error('Error registering business:', error);
     }
@@ -47,6 +59,7 @@ export default function Launch() {
 
   const handleSubmit = (): void => {
     registerBusiness();
+    console.log('Products:', products);
   };
 
   return (
@@ -80,6 +93,9 @@ export default function Launch() {
           setProductPrice={setProductPrice}
           paymentAddress={paymentAddress}
           setPaymentAddress={setPaymentAddress}
+          products={products}
+          addProduct={addProduct}
+          updateProduct={updateProduct}
           handleSubmit={handleSubmit}
         />
       </div>

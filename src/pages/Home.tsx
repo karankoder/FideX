@@ -104,7 +104,7 @@ const Home: FC = () => {
                    shadow-lg shadow-[#FFAA00]/40 transition-all duration-300 ease-in-out
                    hover:bg-[#E69A00] hover:shadow-[#FFAA00]/50
                    relative overflow-hidden'
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/checkout')}
             >
               Chat Assistant
             </button>

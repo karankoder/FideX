@@ -16,6 +16,9 @@ interface LoyaltyFormProps {
   paymentAddress: string;
   setPaymentAddress: (address: string) => void;
   handleSubmit: () => void;
+  products: { name: string; price: string }[];
+  addProduct: () => void;
+  updateProduct: (index: number, field: 'name' | 'price', value: string) => void;
 }
 
 export default function LoyaltyForm({
@@ -34,6 +37,9 @@ export default function LoyaltyForm({
   paymentAddress,
   setPaymentAddress,
   handleSubmit,
+  products,
+  addProduct,
+  updateProduct,
 }: LoyaltyFormProps) {
   const fillExampleData = () => {
     setBusinessName('Test Business');
@@ -41,7 +47,7 @@ export default function LoyaltyForm({
     setRewardThreshold('10');
     setRewardAmount('5');
     setProductPrice('20');
-    setPaymentAddress('abcd.testnet');
+    setPaymentAddress('0x88B1621d8be60c66C54C125Fb5F3fd9e75c1CE87');
   };
 
   return (
@@ -111,17 +117,6 @@ export default function LoyaltyForm({
           </div>
 
           <div className='w-full px-10 mt-5'>
-            <label className='text-[#FFAA00] text-sm'>Product Price</label>
-            <input
-              type='text'
-              placeholder='Type your product price....'
-              className='w-full mt-1 p-2 bg-transparent border border-[#FFAA00] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#FFAA00] text-white placeholder-gray-500'
-              value={productPrice}
-              onChange={(e) => setProductPrice(e.target.value)}
-            />
-          </div>
-
-          <div className='w-full px-10 mt-5'>
             <label className='text-[#FFAA00] text-sm'>Payment Address</label>
             <input
               type='text'
@@ -130,6 +125,37 @@ export default function LoyaltyForm({
               value={paymentAddress}
               onChange={(e) => setPaymentAddress(e.target.value)}
             />
+          </div>
+
+          <div className='w-full px-10 mt-8'>
+            <h4 className='text-[#FFAA00] text-lg mb-4'>Products</h4>
+            {products.map((product, index) => (
+              <div key={index} className='flex space-x-4 mb-4'>
+                <div className='w-1/2'>
+                  <label className='text-[#FFAA00] text-sm'>Product Name</label>
+                  <input
+                    type='text'
+                    placeholder='Type product name...'
+                    className='w-full mt-1 p-2 bg-transparent border border-[#FFAA00] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#FFAA00] text-white placeholder-gray-500'
+                    value={product.name}
+                    onChange={(e) => updateProduct(index, 'name', e.target.value)}
+                  />
+                </div>
+                <div className='w-1/2'>
+                  <label className='text-[#FFAA00] text-sm'>Product Price</label>
+                  <input
+                    type='text'
+                    placeholder='Type product price...'
+                    className='w-full mt-1 p-2 bg-transparent border border-[#FFAA00] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#FFAA00] text-white placeholder-gray-500'
+                    value={product.price}
+                    onChange={(e) => updateProduct(index, 'price', e.target.value)}
+                  />
+                </div>
+              </div>
+            ))}
+            <button className='text-[#FFAA00] mt-2 cursor-pointer' onClick={addProduct}>
+              + Add More
+            </button>
           </div>
 
           <div className='w-full px-10 py-8 flex justify-between'>
@@ -168,4 +194,12 @@ LoyaltyForm.propTypes = {
   paymentAddress: PropTypes.string.isRequired,
   setPaymentAddress: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
+  products: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      price: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  addProduct: PropTypes.func.isRequired,
+  updateProduct: PropTypes.func.isRequired,
 };

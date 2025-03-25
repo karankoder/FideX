@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import loaderGif from '@/assets/loader.gif';
+import { daiContractConfig } from '@/services/contracts';
+import { useEthereum } from '@/services/ethereum/context.ts';
 
 interface Business {
   id: string;
@@ -12,6 +14,8 @@ const AllBusinesses: React.FC = () => {
   const navigate = useNavigate();
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const { getZKsync } = useEthereum();
+  const zkSync = getZKsync();
 
   const handleBusinessClick = (businessHash: string): void => {
     navigate(`/checkout?businessHash=${businessHash}`);
@@ -20,6 +24,36 @@ const AllBusinesses: React.FC = () => {
   const handleShowDetails = (businessHash: string): void => {
     navigate(`/success?businessHash=${businessHash}`);
   };
+
+  async function fetchBusinesses() {
+    try {
+      if (!zkSync) {
+        console.error('provided not found');
+        return;
+      }
+      const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
+      const response = await contract.methods.getBusinesses().call();
+
+      // Format the response
+      console.log(response);
+      const formattedBusinesses = response.map((item: any) => ({
+        id: item[0],
+        name: item[1].name,
+        description: item[1].businessContext,
+      }));
+
+      setBusinesses(formattedBusinesses);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching businesses:', error);
+    }
+  }
+
+  useEffect(() => {
+    if (!zkSync) return;
+
+    fetchBusinesses();
+  }, [zkSync]);
 
   if (loading) {
     return (
