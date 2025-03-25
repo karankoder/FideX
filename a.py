@@ -500,6 +500,7 @@ contract_abi = '''[
       "type": "function"
     }
   ]'''
+
 private_key="842d48f8f29f383f5f1abcc2572d83e658ad526a360de8d688e0768342fc621c"
 account = Account.from_key("842d48f8f29f383f5f1abcc2572d83e658ad526a360de8d688e0768342fc621c")
 # Create contract instance

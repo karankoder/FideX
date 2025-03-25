@@ -14,6 +14,7 @@ contract FedX {
     address paymentAddress;
     string businessContext;
     uint256 productPrice;
+    Products[] products;
   }
 
   uint16 businessHashCount;
@@ -26,6 +27,11 @@ contract FedX {
   struct BusinessEntry {
     uint16 businessHash;
     Business business;
+  }
+
+  struct Products {
+    string name;
+    uint256 price;
   }
 
   mapping(uint16 => Business) public businesses;
@@ -51,7 +57,8 @@ contract FedX {
     uint256 rewardAmount,
     address paymentAddress,
     string memory businessContext,
-    uint256 productPrice
+    uint256 productPrice,
+    Products[] memory products
   ) external returns (uint16) {
     uint16 businessHash = businessHashCount;
 
@@ -63,7 +70,8 @@ contract FedX {
       isActive: true,
       paymentAddress: paymentAddress,
       businessContext: businessContext,
-      productPrice: productPrice
+      productPrice: productPrice,
+      products: products
     });
 
     businessHashCount += 1;
@@ -71,21 +79,21 @@ contract FedX {
     return businessHash;
   }
 
-  function buySomething(uint16 businessHash) external payable {
+  function buySomething(uint16 businessHash, uint16 productIndex) external payable {
     require(businesses[businessHash].isActive, 'Business not active');
     require(msg.value >= 0.001 ether, 'Minimum transaction amount is 0.001 ETH');
 
-    uint256 amount = msg.value;
+    uint256 productPrice = businesses[businessHash].products[productIndex].price;
     address user = msg.sender;
 
     transactions[businessHash].push(
-      Transaction({ user: user, amount: amount, timestamp: block.timestamp })
+      Transaction({ user: user, amount: msg.value, timestamp: block.timestamp })
     );
 
     userPoints[businessHash][user] += 1;
 
     // payable(businesses[businessHash].owner).transfer(amount);
-    (bool success, ) = businesses[businessHash].owner.call{ value: amount }('');
+    (bool success, ) = businesses[businessHash].owner.call{ value: productPrice }('');
 
     require(success, 'Transfer failed');
   }

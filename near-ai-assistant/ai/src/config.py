@@ -16,7 +16,6 @@ class _Config:
     zksync_rpc_url: str
     private_key: str
     contract_address: str
-    contract_abi: any
 
     def __init__(self):
         load_dotenv()
@@ -37,6 +36,5 @@ class _Config:
         self.zksync_rpc_url = os.getenv("ZKSYNC_SEPOLIA_URL")
         self.private_key = os.getenv("PRIVATE_KEY")
         self.contract_address = os.getenv("CONTRACT_ADDRESS")
-        self.contract_abi = os.getenv("CONTRACT_ABI")
 
 env = _Config()
