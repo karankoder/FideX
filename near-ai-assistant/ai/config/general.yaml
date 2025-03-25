@@ -1,0 +1,27 @@
+# Model config
+model:
+  name: "Nous Hermes 2 Pro"  # Unused, for information purposes only
+  # api_url: "http://localhost:8080/completion"
+  api_url: "https://curated.aleph.cloud/vm/84df52ac4466d121ef3bb409bb14f315de7be4ce600e8948d71df6485aa5bcc3/completion"
+
+  max_prompt_tokens: 16384
+  max_completion_tokens: 700
+  temperature: 0.7
+  top_p: 0.9
+  top_k: 40
+
+# Agent config
+agent:
+  max_completion_tries: 3
+  max_recurse_depth: 5
+  system_prompt_template: "config/system_prompt.yaml"
+
+# ChatML config
+chat_ml:
+  user_prepend: "<|im_start|>"
+  user_append: "<|im_end|>"
+  stop_sequences:
+    - "<|im_end|>"
+    - "<|endoftext|>"
+    - "</assistant"
+    - "</user"
