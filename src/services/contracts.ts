@@ -70,6 +70,19 @@ const ABI = [
     type: 'event',
   },
   {
+    inputs: [],
+    name: 'businessHashCount',
+    outputs: [
+      {
+        internalType: 'uint16',
+        name: '',
+        type: 'uint16',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [
       {
         internalType: 'uint16',
@@ -128,6 +141,11 @@ const ABI = [
       {
         internalType: 'uint16',
         name: 'businessHash',
+        type: 'uint16',
+      },
+      {
+        internalType: 'uint16',
+        name: 'productIndex',
         type: 'uint16',
       },
     ],
@@ -273,6 +291,23 @@ const ABI = [
                 name: 'productPrice',
                 type: 'uint256',
               },
+              {
+                components: [
+                  {
+                    internalType: 'string',
+                    name: 'name',
+                    type: 'string',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'price',
+                    type: 'uint256',
+                  },
+                ],
+                internalType: 'struct FedX.Products[]',
+                name: 'products',
+                type: 'tuple[]',
+              },
             ],
             internalType: 'struct FedX.Business',
             name: 'business',
@@ -398,6 +433,23 @@ const ABI = [
         name: 'productPrice',
         type: 'uint256',
       },
+      {
+        components: [
+          {
+            internalType: 'string',
+            name: 'name',
+            type: 'string',
+          },
+          {
+            internalType: 'uint256',
+            name: 'price',
+            type: 'uint256',
+          },
+        ],
+        internalType: 'struct FedX.Products[]',
+        name: 'products',
+        type: 'tuple[]',
+      },
     ],
     name: 'registerBusiness',
     outputs: [
@@ -507,6 +559,6 @@ const ABI = [
 ];
 
 export const daiContractConfig = {
-  address: '0xf382dED7F34156A648f82740aae3965fdAcd87F9',
+  address: '0xaDd260fa2fEcb970B3723Df16802FcCAf637566d',
   abi: ABI,
 } as const;

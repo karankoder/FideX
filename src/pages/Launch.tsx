@@ -38,6 +38,11 @@ export default function Launch() {
       }
       const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
 
+      const formattedProducts = products.map((product) => ({
+        name: product.name,
+        price: parseInt(product.price),
+      }));
+
       const receipt = await contract.methods
         .registerBusiness(
           businessName,
@@ -45,7 +50,8 @@ export default function Launch() {
           parseInt(rewardAmount),
           paymentAddress,
           businessDescription,
-          parseInt(productPrice)
+          parseInt(productPrice),
+          formattedProducts
         )
         .send({ from: account.address || '' });
 
