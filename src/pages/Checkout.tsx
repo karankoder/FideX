@@ -34,7 +34,7 @@ export default function Checkout() {
     },
   ]);
   const [business, setBusiness] = useState<Business | null>(null);
- const { account, getZKsync } = useEthereum();
+  const { account, getZKsync } = useEthereum();
   const navigate = useNavigate();
   const location = useLocation();
   const businessHash = new URLSearchParams(location.search).get('businessHash');
@@ -105,7 +105,7 @@ export default function Checkout() {
       console.error('Error ', error);
     }
     console.log('Done  shutdown_business');
-}
+  }
 
   const addNewMessage = (author, content) => {
     const groups = messageGroupsRef.current;

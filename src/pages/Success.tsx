@@ -2,6 +2,8 @@ import { useLocation, useNavigate } from 'react-router';
 import { QRCodeSVG } from 'qrcode.react';
 import { toPng } from 'html-to-image';
 import { useRef, useState } from 'react';
+import { daiContractConfig } from '@/services/contracts';
+import { useEthereum } from '@/services/ethereum/context.ts';
 
 const BASE_URL = 'process.env.BASE_URL as string;';
 
@@ -13,6 +15,72 @@ export default function Success() {
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
   const navigate = useNavigate();
   const [userPoints, setUserPoints] = useState<number>(120);
+  const { account, getZKsync } = useEthereum();
+  const buy = async (indx: number): Promise<void> => {
+    try {
+      const zkSync = getZKsync();
+      if (!zkSync) {
+        console.error('Provider not found');
+        return;
+      }
+      const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
+
+      const receipt = await contract.methods
+        .buySomething(
+          parseInt(businessHash),
+          indx
+        )
+        .send({ from: account.address || '' });
+
+      console.log('Success:', receipt);
+   
+    } catch (error) {
+      console.error('Error :', error);
+    }
+    console.log('Done buying');
+  }
+  const claim_reward = async () => {
+    try {
+      const zkSync = getZKsync();
+      if (!zkSync) {
+        console.error('Provider not found');
+        return;
+      }
+      const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
+
+      const receipt = await contract.methods
+        .claimReward(
+          parseInt(businessHash)
+        )
+        .send({ from: account.address || '' });
+
+      console.log('Success:', receipt);
+    } catch (error) {
+      console.error('Error ', error);
+    }
+    console.log('Done claim reward');
+  }
+  const shutdown_business = async () => {
+    try {
+      const zkSync = getZKsync();
+      if (!zkSync) {
+        console.error('Provider not found');
+        return;
+      }
+      const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
+
+      const receipt = await contract.methods
+        .claimReward(
+          parseInt(businessHash)
+        )
+        .send({ from: account.address || '' });
+
+      console.log('Success:', receipt);
+    } catch (error) {
+      console.error('Error ', error);
+    }
+    console.log('Done  shutdown_business');
+  }
 
   const handleAssistant = (): void => {
     if (businessHash) {
@@ -37,13 +105,16 @@ export default function Success() {
         });
     }
   };
+  
 
   const handleShutdownBusiness = (): void => {
+    shutdown_business();
     alert('Business has been shut down successfully!');
   };
 
   const handleClaimRewards = (): void => {
     if (userPoints >= businessInfo.rewardThreshold) {
+      claim_reward();
       alert(`Congratulations! You have claimed ${businessInfo.rewardAmount}% reward.`);
       setUserPoints(userPoints - businessInfo.rewardThreshold);
     } else {
