@@ -17,7 +17,7 @@ contract FedX {
     Products[] products;
   }
 
-  uint16 businessHashCount;
+  uint16 public businessHashCount;
   struct Transaction {
     address user;
     uint256 amount;
