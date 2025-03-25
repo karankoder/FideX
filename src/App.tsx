@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from 'react-router';
 import { Navigation } from '@/components/Navigation';
 import Success from '@/pages/Success';
 import Checkout from './pages/Checkout';
+import Features from './pages/Features';
 
 export function App() {
   return (
@@ -20,6 +21,7 @@ export function App() {
           <Route path='/businesses' element={<AllBusinesses />} />
           <Route path='/success' element={<Success />} />
           <Route path='/checkout' element={<Checkout />} />
+          <Route path='/features' element={<Features />} />
         </Routes>
       </BrowserRouter>
     </EthereumContextProvider>
