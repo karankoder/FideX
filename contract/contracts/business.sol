@@ -154,6 +154,10 @@ contract FedX {
     return businessList;
   }
 
+  function getBusinesInfo(uint16 businessHash) external view returns (Business memory) {
+    return businesses[businessHash];
+  }
+
   // -------------LLM-EVENTS--------------
 
   function emitRegisterBusiness() external returns (string memory) {

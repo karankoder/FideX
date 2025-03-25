@@ -79,6 +79,19 @@ contract_abi = '''[
       "type": "event"
     },
     {
+      "inputs": [],
+      "name": "businessHashCount",
+      "outputs": [
+        {
+          "internalType": "uint16",
+          "name": "",
+          "type": "uint16"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "uint16",
@@ -122,6 +135,11 @@ contract_abi = '''[
           "internalType": "string",
           "name": "businessContext",
           "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "productPrice",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -135,9 +153,9 @@ contract_abi = '''[
           "type": "uint16"
         },
         {
-          "internalType": "address",
-          "name": "user",
-          "type": "address"
+          "internalType": "uint16",
+          "name": "productIndex",
+          "type": "uint16"
         }
       ],
       "name": "buySomething",
@@ -276,6 +294,28 @@ contract_abi = '''[
                   "internalType": "string",
                   "name": "businessContext",
                   "type": "string"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "productPrice",
+                  "type": "uint256"
+                },
+                {
+                  "components": [
+                    {
+                      "internalType": "string",
+                      "name": "name",
+                      "type": "string"
+                    },
+                    {
+                      "internalType": "uint256",
+                      "name": "price",
+                      "type": "uint256"
+                    }
+                  ],
+                  "internalType": "struct FedX.Products[]",
+                  "name": "products",
+                  "type": "tuple[]"
                 }
               ],
               "internalType": "struct FedX.Business",
@@ -388,9 +428,36 @@ contract_abi = '''[
           "type": "uint256"
         },
         {
+          "internalType": "address",
+          "name": "paymentAddress",
+          "type": "address"
+        },
+        {
           "internalType": "string",
           "name": "businessContext",
           "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "productPrice",
+          "type": "uint256"
+        },
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "price",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct FedX.Products[]",
+          "name": "products",
+          "type": "tuple[]"
         }
       ],
       "name": "registerBusiness",
@@ -498,7 +565,8 @@ contract_abi = '''[
       "stateMutability": "view",
       "type": "function"
     }
-  ]'''
+  ]
+  '''
 
 contract_address="0xf382dED7F34156A648f82740aae3965fdAcd87F9"
 provider = Web3(Web3.HTTPProvider(env.zksync_rpc_url))
@@ -546,6 +614,9 @@ def get_eth_price():
         A string containing the ETH price in USD"""
     
 async def get_eth_price_raw() -> str:
+  
+    print("fetching prices")
+
     url = "https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT"
     try: 
         response = requests.get(url)
@@ -595,7 +666,8 @@ async def get_business_register_raw()->str:
     signed_txn = provider.eth.account.sign_transaction(txn, env.private_key)
     tx_hash = provider.eth.send_raw_transaction(signed_txn.raw_transaction)
     receipt = provider.eth.wait_for_transaction_receipt(tx_hash)
-    
+    print(tx_hash)
+    print(tx_hash.hex())
     if receipt.status == 1:
         return f"Event emitted for registering a business with eventId : {tx_hash.hex()},Please sign the transaction"
     else:
