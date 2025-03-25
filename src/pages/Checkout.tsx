@@ -1,6 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { FaRobot, FaUser, FaTrophy, FaDollarSign, FaTag } from 'react-icons/fa';
+import socket from "../utils/socket";
+import { v4 as uuidv4 } from "uuid";
+import { useEthereum } from '@/services/ethereum/context.ts';
+import { daiContractConfig } from '@/services/contracts.ts';
 
 interface Message {
   id?: string;
@@ -30,13 +34,113 @@ export default function Checkout() {
     },
   ]);
   const [business, setBusiness] = useState<Business | null>(null);
-
+ const { account, getZKsync } = useEthereum();
   const navigate = useNavigate();
   const location = useLocation();
   const businessHash = new URLSearchParams(location.search).get('businessHash');
+  const messageGroupsRef = useRef<MessageGroup[]>([]);
+  messageGroupsRef.current = messageGroups;
 
+  const buy = async () => {
+    try {
+      const zkSync = getZKsync();
+      if (!zkSync) {
+        console.error('Provider not found');
+        return;
+      }
+      const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
+
+      const receipt = await contract.methods
+        .buySomething(
+          parseInt(businessHash),
+          0
+        )
+        .send({ from: account.address || '' });
+
+      console.log('Success:', receipt);
+   
+    } catch (error) {
+      console.error('Error :', error);
+    }
+    console.log('Done buying');
+  }
+  const claim_reward = async () => {
+    try {
+      const zkSync = getZKsync();
+      if (!zkSync) {
+        console.error('Provider not found');
+        return;
+      }
+      const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
+
+      const receipt = await contract.methods
+        .claimReward(
+          parseInt(businessHash)
+        )
+        .send({ from: account.address || '' });
+
+      console.log('Success:', receipt);
+    } catch (error) {
+      console.error('Error ', error);
+    }
+    console.log('Done claim reward');
+  }
+  const shutdown_business = async () => {
+    try {
+      const zkSync = getZKsync();
+      if (!zkSync) {
+        console.error('Provider not found');
+        return;
+      }
+      const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
+
+      const receipt = await contract.methods
+        .claimReward(
+          parseInt(businessHash)
+        )
+        .send({ from: account.address || '' });
+
+      console.log('Success:', receipt);
+    } catch (error) {
+      console.error('Error ', error);
+    }
+    console.log('Done  shutdown_business');
+}
+
+  const addNewMessage = (author, content) => {
+    const groups = messageGroupsRef.current;
+    if (groups.length > 0) {
+        const lastMessageGroup = { ...groups[groups.length - 1] };
+        if (lastMessageGroup.author === author) {
+            lastMessageGroup.messages.push({ content, id: uuidv4() });
+            setMessageGroups((oldGroups) => [...oldGroups.slice(0, -1), lastMessageGroup]);
+            return;
+        }
+    }
+    setMessageGroups((oldMessageGroups) => [
+        ...oldMessageGroups,
+        { author, messages: [{ content, id: uuidv4() }], id: uuidv4() },
+    ]);
+  };
+
+  async function txnfunction(txnhash) {
+      
+  }
+  function extractTransactionHashes(content) {
+    const regex = /[a-zA-Z0-9]{31,}/g;
+    const matches = [];
+    let match;
+    while ((match = regex.exec(content)) !== null) {
+        matches.push(match[0]);
+    }
+  
+    return matches.length > 0 ? matches : null;
+  }
+  
   useEffect(() => {
     // Dummy business data for demo purposes
+    socket.connect();
+    console.log("socket", socket);
     setBusiness({
       name: 'Demo Business',
       owner: '0x1234567890abcdef1234567890abcdef12345678',
@@ -44,6 +148,38 @@ export default function Checkout() {
       reward_amount: '$50',
       product_price: '$20',
     });
+    const onResponse = async (value) => {
+      const txnhashes = extractTransactionHashes(value);
+      console.log("txnhashes", txnhashes);
+      if (txnhashes != null) {
+          for (const txnhash of txnhashes) {
+              console.log("txnhash", txnhash);
+              const methodNames = await txnfunction(txnhash);
+              console.log(methodNames);
+              if (methodNames[0] === "RegisterBusinessEvent") {
+                  console.log("RegisterBusinessEvent");
+                  navigate("/launch");
+              }
+              else if (methodNames[0] === "BuyEvent") {
+                  buy();
+              }
+              else if (methodNames[0] === "ClaimRewardEvent") {
+                  claim_reward();
+              }
+              else if (methodNames[0] === "BusinessShutdownEvent") {
+                  shutdown_business();
+              }
+          }
+      }
+      addNewMessage("ai", value);
+  };
+
+  socket.on("response", onResponse);
+
+  return () => {
+      socket.off("response", onResponse);
+      socket.disconnect();
+  };
   }, []);
 
   return (
