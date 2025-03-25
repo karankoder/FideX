@@ -10,7 +10,7 @@ export const Navigation: React.FC = () => {
 
   useEffect(() => {
     if (!account) return;
-
+    console.log('Account:', account);
     if (account.isConnected) {
       setAction(() => disconnect);
       setLabel(`Logout ${account.address.slice(0, 5)}...${account.address.slice(-4)}`);

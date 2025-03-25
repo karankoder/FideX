@@ -1,5 +1,10 @@
 import { useState } from 'react';
 import LoyaltyForm from '@/components/LoyaltyForm';
+import { useNavigate } from 'react-router';
+import { FormEvent, useCallback } from 'react';
+import { useEthereum } from '@/services/ethereum/context.ts';
+import { useAsync } from '@/hooks/use-async.ts';
+import { daiContractConfig } from '@/services/contracts.ts';
 
 export default function Launch() {
   const [step, setStep] = useState<number>(1);
@@ -9,9 +14,35 @@ export default function Launch() {
   const [rewardAmount, setRewardAmount] = useState<string>('');
   const [productPrice, setProductPrice] = useState<string>('');
   const [paymentAddress, setPaymentAddress] = useState<string>('');
+  const { account, getZKsync } = useEthereum();
+  const zkSync = getZKsync();
+  const navigate = useNavigate();
 
-  const registerBusiness = async (): Promise<void> => {
-    console.log('Registering business...');
+  const registerBusiness = async () => {
+    try {
+      if (!zkSync) {
+        console.error('Provider not found');
+        return;
+      }
+      const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
+
+      const receipt = await contract.methods
+        .registerBusiness(
+          businessName,
+          parseInt(rewardThreshold),
+          parseInt(rewardAmount),
+          paymentAddress,
+          businessDescription,
+          parseInt(productPrice)
+        )
+        .send({ from: account.address || '' });
+
+      console.log('Success:', receipt);
+      // navigate(`/success?businessHash=${receipt.transactionHash}`);
+    } catch (error) {
+      console.error('Error registering business:', error);
+    }
+    console.log('Done');
   };
 
   const handleSubmit = (): void => {
