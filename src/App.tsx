@@ -5,6 +5,7 @@ import AllBusinesses from '@/pages/AllBusinesses';
 import { EthereumContextProvider } from '@/services/ethereum/EthereumContext.tsx';
 import { BrowserRouter, Routes, Route } from 'react-router';
 import { Navigation } from '@/components/Navigation';
+import Success from '@/pages/Success';
 
 export function App() {
   return (
@@ -16,6 +17,7 @@ export function App() {
           <Route path='/test' element={<Test />} />
           <Route path='/launch' element={<Launch />} />
           <Route path='/businesses' element={<AllBusinesses />} />
+          <Route path='/success' element={<Success />} />
         </Routes>
       </BrowserRouter>
     </EthereumContextProvider>
