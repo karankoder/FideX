@@ -3,8 +3,8 @@
 A decentralized loyalty platform where business owners can register loyalty porgrams for their business, which will be operated by ai-assistants for seamless onboarding over the ZKSync blockchain.
 
 ## Video Demo
-
-https://www.loom.com/share/9d1e242504834dd990a89f2d0f57f872
+[
+https://www.loom.com/share/9d1e242504834dd990a89f2d0f57f872](https://www.loom.com/share/02b52cc987e44ec3a60c71bf557f53cf)
 
 ## Inspiration
 
