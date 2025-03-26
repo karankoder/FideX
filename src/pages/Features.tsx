@@ -10,7 +10,7 @@ const features = [
   {
     title: 'AI-Powered Assistance',
     description:
-      'Near-AI Assistant helps businesses and customers interact seamlessly with real-time support.',
+      'AI Assistant helps businesses and customers interact seamlessly with real-time support.',
   },
   {
     title: 'Multi-Chain Support',

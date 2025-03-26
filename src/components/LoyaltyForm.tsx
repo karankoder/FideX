@@ -42,8 +42,8 @@ export default function LoyaltyForm({
   updateProduct,
 }: LoyaltyFormProps) {
   const fillExampleData = () => {
-    setBusinessName('Test Business');
-    setBusinessDescription('This is an example business description.');
+    setBusinessName('Coffee Shop');
+    setBusinessDescription('Welcome to our coffee shop! We serve the best coffee in town.');
     setRewardThreshold('10');
     setRewardAmount('5');
     setProductPrice('20');

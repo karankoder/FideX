@@ -36,11 +36,13 @@ const AllBusinesses: React.FC = () => {
 
       // Format the response
       console.log(response);
-      const formattedBusinesses = response.map((item: any) => ({
-        id: item[0],
-        name: item[1].name,
-        description: item[1].businessContext,
-      }));
+      const formattedBusinesses = response
+        .filter((item: any) => item[1].isActive)
+        .map((item: any) => ({
+          id: item[0],
+          name: item[1].name,
+          description: item[1].businessContext,
+        }));
 
       setBusinesses(formattedBusinesses);
       setLoading(false);
