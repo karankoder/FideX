@@ -51,7 +51,7 @@ export default function Success() {
 
       const receipt = await contract.methods
         .buySomething(parseInt(businessHash), indx)
-        .send({ from: account.address || '' });
+        .send({ from: account.address || '' ,value: "1000000000000000000"});
 
       console.log('Success:', receipt);
     } catch (error) {
