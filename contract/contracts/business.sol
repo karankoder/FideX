@@ -80,21 +80,27 @@ contract FedX {
   }
 
   function buySomething(uint16 businessHash, uint16 productIndex) external payable {
-    require(businesses[businessHash].isActive, 'Business not active');
-    require(msg.value >= 0.001 ether, 'Minimum transaction amount is 0.001 ETH');
+    // require(businesses[businessHash].isActive, 'Business not active');
+    // address user = msg.sender;
+    // transactions[businessHash].push(
+    //   Transaction({ user: user, amount: msg.value, timestamp: block.timestamp })
+    // );
+    // userPoints[businessHash][user] += 1;
+    // payable(businesses[businessHash].owner).transfer(msg.value);
+    // (bool success, ) = payable(businesses[businessHash].owner).call{ value: msg.value }('');
+    // require(success, 'Transfer failed');
+  }
 
-    address user = msg.sender;
-
-    transactions[businessHash].push(
-      Transaction({ user: user, amount: msg.value, timestamp: block.timestamp })
-    );
-
-    userPoints[businessHash][user] += 1;
-
-    // payable(businesses[businessHash].owner).transfer(amount);
-    (bool success, ) = businesses[businessHash].owner.call{ value: msg.value }('');
-
-    require(success, 'Transfer failed');
+  function buySomething2(uint16 businessHash, uint16 productIndex) external {
+    // require(businesses[businessHash].isActive, 'Business not active');
+    // address user = msg.sender;
+    // transactions[businessHash].push(
+    //   Transaction({ user: user, amount: msg.value, timestamp: block.timestamp })
+    // );
+    // userPoints[businessHash][user] += 1;
+    // payable(businesses[businessHash].owner).transfer(msg.value);
+    // (bool success, ) = payable(businesses[businessHash].owner).call{ value: msg.value }('');
+    // require(success, 'Transfer failed');
   }
 
   function claimReward(uint16 businessHash) external returns (string memory) {

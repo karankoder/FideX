@@ -161,6 +161,24 @@ const ABI = [
         name: 'businessHash',
         type: 'uint16',
       },
+      {
+        internalType: 'uint16',
+        name: 'productIndex',
+        type: 'uint16',
+      },
+    ],
+    name: 'buySomething2',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint16',
+        name: 'businessHash',
+        type: 'uint16',
+      },
     ],
     name: 'claimReward',
     outputs: [
