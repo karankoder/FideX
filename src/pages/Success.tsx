@@ -16,6 +16,7 @@ export default function Success() {
   const navigate = useNavigate();
   const [userPoints, setUserPoints] = useState<number>(120);
   const { account, getZKsync } = useEthereum();
+  const zkSync = getZKsync();
   interface Product {
     name: string;
     price: string;
@@ -129,7 +130,6 @@ export default function Success() {
   const handleClaimRewards = (): void => {
     if (userPoints >= businessInfo.rewardThreshold) {
       claim_reward();
-      alert(`Congratulations! You have claimed ${businessInfo.rewardAmount}% reward.`);
       setUserPoints(userPoints - businessInfo.rewardThreshold);
     } else {
       alert('Not enough points to claim rewards.');
@@ -137,10 +137,9 @@ export default function Success() {
   };
 
   async function fetchBusinessesInfo() {
-    const zkSync = getZKsync();
     try {
       if (!zkSync) {
-        console.error('Provider not found');
+        // console.error('Provider not found');
         return;
       }
       const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
@@ -166,15 +165,35 @@ export default function Success() {
       };
 
       setBusinessInfo(parsedBusiness);
-      console.log('Business details updated:', parsedBusiness);
+      // console.log('Business details updated:', parsedBusiness);
     } catch (error) {
       console.error('Error fetching businesses:', error);
     }
   }
 
+  async function fetchUserPoints() {
+    try {
+      if (!zkSync || !account) {
+        // console.error('Provider not found');
+        return;
+      }
+      const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
+      console.log('Account address:', account.address);
+      const points: string = await contract.methods
+        .getPoints(parseInt(businessHash), account.address)
+        .call();
+      // console.log('Points:', points);
+      setUserPoints(parseInt(points));
+      // console.log('User points updated:', points);
+    } catch (error) {
+      console.error('Error fetching user points:', error);
+    }
+  }
+
   useEffect(() => {
     fetchBusinessesInfo();
-  }, []);
+    fetchUserPoints();
+  }, [zkSync, account]);
 
   return (
     <div
