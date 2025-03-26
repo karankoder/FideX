@@ -655,6 +655,6 @@ const ABI = [
 ];
 
 export const daiContractConfig = {
-  address: '0x7e22bbC0d8604dd0631C59bab9b8BD702357f6F1',
+  address: '0x3F43ED343eA4623402CcB4D06d3EBb8725e2850A',
   abi: ABI,
 } as const;

@@ -53,7 +53,7 @@ export default function Success() {
       console.log('account:', account.address);
       console.log('indx:', indx);
       const receipt = await contract.methods
-        .buySomething2(parseInt(businessHash || '0'), indx)
+        .buySomething(parseInt(businessHash || '0'), indx)
         .send({ from: account.address || '' });
 
       console.log('Success:', receipt);

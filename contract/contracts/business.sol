@@ -85,7 +85,7 @@ contract FedX {
     // transactions[businessHash].push(
     //   Transaction({ user: user, amount: msg.value, timestamp: block.timestamp })
     // );
-    userPoints[businessHash][user] += 1;
+    // userPoints[businessHash][user] += 1;
     // payable(businesses[businessHash].owner).transfer(msg.value);
     // (bool success, ) = payable(businesses[businessHash].owner).call{ value: msg.value }('');
     // require(success, 'Transfer failed');
@@ -97,7 +97,7 @@ contract FedX {
     // transactions[businessHash].push(
     //   Transaction({ user: user, amount: msg.value, timestamp: block.timestamp })
     // );
-    // userPoints[businessHash][user] += 1;
+    userPoints[businessHash][user] += 1;
     // payable(businesses[businessHash].owner).transfer(msg.value);
     // (bool success, ) = payable(businesses[businessHash].owner).call{ value: msg.value }('');
     // require(success, 'Transfer failed');
@@ -111,9 +111,11 @@ contract FedX {
     // );
     Business storage business = businesses[businessHash];
 
-    payable(msg.sender).transfer(business.rewardAmount);
+    userPoints[businessHash][msg.sender] -= business.rewardThreshold;
 
-    (bool success, ) = payable(msg.sender).call{ value: business.rewardAmount }('');
+    // payable(msg.sender).transfer(business.rewardAmount);
+
+    // (bool success, ) = payable(msg.sender).call{ value: business.rewardAmount }('');
 
     // require(success, 'Reward transfer failed');
     return 'Reward claimed';
