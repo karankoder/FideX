@@ -56,7 +56,7 @@ export default function Checkout() {
       const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
 
       const receipt = await contract.methods
-        .buySomething(parseInt(businessHash || '0'), 0)
+        .buySomething2(parseInt(businessHash || '0'), 0)
         .send({ from: account.address || '' ,value: "1000000000000000000"});
 
       console.log('Success:', receipt);
