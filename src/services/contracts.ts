@@ -161,6 +161,24 @@ const ABI = [
         name: 'businessHash',
         type: 'uint16',
       },
+      {
+        internalType: 'uint16',
+        name: 'productIndex',
+        type: 'uint16',
+      },
+    ],
+    name: 'buySomething2',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint16',
+        name: 'businessHash',
+        type: 'uint16',
+      },
     ],
     name: 'claimReward',
     outputs: [
@@ -637,6 +655,6 @@ const ABI = [
 ];
 
 export const daiContractConfig = {
-  address: '0xbbfab6a84685c3453A37fF9F642375262b22Ef54',
+  address: '0xd67d84e268BC3a5F7cF850B3064c88D3c961B60e',
   abi: ABI,
 } as const;
