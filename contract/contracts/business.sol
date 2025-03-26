@@ -114,9 +114,9 @@ contract FedX {
 
     // payable(msg.sender).transfer(business.rewardAmount);
 
-    (bool success, ) = payable(msg.sender).call{ value: business.rewardAmount }('');
+    // (bool success, ) = payable(msg.sender).call{ value: business.rewardAmount }('');
 
-    require(success, 'Reward transfer failed');
+    // require(success, 'Reward transfer failed');
     return 'Reward claimed';
   }
 
