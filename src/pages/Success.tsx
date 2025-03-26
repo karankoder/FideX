@@ -14,7 +14,7 @@ export default function Success() {
   const qrCodeRef = useRef<HTMLDivElement | null>(null);
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
   const navigate = useNavigate();
-  const [userPoints, setUserPoints] = useState<number>(120);
+  const [userPoints, setUserPoints] = useState<number>(0);
   const { account, getZKsync } = useEthereum();
   const zkSync = getZKsync();
   interface Product {
@@ -49,9 +49,12 @@ export default function Success() {
       }
       const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
 
+      console.log('businessHash:', businessHash);
+      console.log('account:', account.address);
+      console.log('indx:', indx);
       const receipt = await contract.methods
-        .buySomething(parseInt(businessHash), indx)
-        .send({ from: account.address || '' ,value: "1000000000000000000"});
+        .buySomething2(parseInt(businessHash), indx)
+        .send({ from: account.address || '', value: '1000000000000000000' });
 
       console.log('Success:', receipt);
     } catch (error) {
@@ -59,6 +62,7 @@ export default function Success() {
     }
     console.log('Done buying');
   };
+
   const claim_reward = async () => {
     try {
       const zkSync = getZKsync();
@@ -88,10 +92,11 @@ export default function Success() {
       const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
 
       const receipt = await contract.methods
-        .claimReward(parseInt(businessHash))
+        .shutdownBusiness(parseInt(businessHash))
         .send({ from: account.address || '' });
 
       console.log('Success:', receipt);
+      navigate('/');
     } catch (error) {
       console.error('Error ', error);
     }
@@ -124,16 +129,15 @@ export default function Success() {
 
   const handleShutdownBusiness = (): void => {
     shutdown_business();
-    alert('Business has been shut down successfully!');
   };
 
   const handleClaimRewards = (): void => {
-    if (userPoints >= businessInfo.rewardThreshold) {
-      claim_reward();
-      setUserPoints(userPoints - businessInfo.rewardThreshold);
-    } else {
-      alert('Not enough points to claim rewards.');
-    }
+    claim_reward();
+    // if (userPoints >= businessInfo.rewardThreshold) {
+    //   claim_reward();
+    // } else {
+    //   alert('Not enough points to claim rewards.');
+    // }
   };
 
   async function fetchBusinessesInfo() {

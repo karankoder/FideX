@@ -94,7 +94,7 @@ export default function Checkout() {
       const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
 
       const receipt = await contract.methods
-        .claimReward(parseInt(businessHash || '0'))
+        .shutdownBusiness(parseInt(businessHash || '0'))
         .send({ from: account.address || '' });
 
       console.log('Success:', receipt);
