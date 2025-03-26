@@ -46,6 +46,8 @@ const AllBusinesses: React.FC = () => {
       setLoading(false);
     } catch (error) {
       console.error('Error fetching businesses:', error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -62,6 +64,17 @@ const AllBusinesses: React.FC = () => {
         style={{ height: 'calc(100vh - 80px)' }}
       >
         <img src={loaderGif} alt='Loading...' />
+      </div>
+    );
+  }
+
+  if (!loading && businesses.length === 0) {
+    return (
+      <div
+        className='w-full flex justify-center items-center text-white text-2xl'
+        style={{ height: 'calc(100vh - 80px)' }}
+      >
+        No businesses found.
       </div>
     );
   }

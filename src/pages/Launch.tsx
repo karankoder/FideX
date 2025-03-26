@@ -55,7 +55,10 @@ export default function Launch() {
         .send({ from: account.address || '' });
 
       console.log('Success:', receipt);
-      navigate(`/success?businessHash=${receipt.transactionHash}`);
+
+      const totalBusinesses = await contract.methods.getBusinesses().call();
+      console.log('totalBusinesses:', totalBusinesses);
+      navigate(`/success?businessHash=${totalBusinesses.length - 1}`);
     } catch (error) {
       console.error('Error registering business:', error);
     }
