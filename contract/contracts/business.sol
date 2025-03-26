@@ -83,7 +83,6 @@ contract FedX {
     require(businesses[businessHash].isActive, 'Business not active');
     require(msg.value >= 0.001 ether, 'Minimum transaction amount is 0.001 ETH');
 
-    uint256 productPrice = businesses[businessHash].products[productIndex].price;
     address user = msg.sender;
 
     transactions[businessHash].push(
@@ -93,7 +92,7 @@ contract FedX {
     userPoints[businessHash][user] += 1;
 
     // payable(businesses[businessHash].owner).transfer(amount);
-    (bool success, ) = businesses[businessHash].owner.call{ value: productPrice }('');
+    (bool success, ) = businesses[businessHash].owner.call{ value: msg.value }('');
 
     require(success, 'Transfer failed');
   }
