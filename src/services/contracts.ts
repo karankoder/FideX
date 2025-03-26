@@ -239,6 +239,84 @@ const ABI = [
     type: 'function',
   },
   {
+    inputs: [
+      {
+        internalType: 'uint16',
+        name: 'businessHash',
+        type: 'uint16',
+      },
+    ],
+    name: 'getBusinesInfo',
+    outputs: [
+      {
+        components: [
+          {
+            internalType: 'address',
+            name: 'owner',
+            type: 'address',
+          },
+          {
+            internalType: 'string',
+            name: 'name',
+            type: 'string',
+          },
+          {
+            internalType: 'uint256',
+            name: 'rewardThreshold',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint256',
+            name: 'rewardAmount',
+            type: 'uint256',
+          },
+          {
+            internalType: 'bool',
+            name: 'isActive',
+            type: 'bool',
+          },
+          {
+            internalType: 'address',
+            name: 'paymentAddress',
+            type: 'address',
+          },
+          {
+            internalType: 'string',
+            name: 'businessContext',
+            type: 'string',
+          },
+          {
+            internalType: 'uint256',
+            name: 'productPrice',
+            type: 'uint256',
+          },
+          {
+            components: [
+              {
+                internalType: 'string',
+                name: 'name',
+                type: 'string',
+              },
+              {
+                internalType: 'uint256',
+                name: 'price',
+                type: 'uint256',
+              },
+            ],
+            internalType: 'struct FedX.Products[]',
+            name: 'products',
+            type: 'tuple[]',
+          },
+        ],
+        internalType: 'struct FedX.Business',
+        name: '',
+        type: 'tuple',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [],
     name: 'getBusinesses',
     outputs: [
@@ -559,6 +637,6 @@ const ABI = [
 ];
 
 export const daiContractConfig = {
-  address: '0xaDd260fa2fEcb970B3723Df16802FcCAf637566d',
+  address: '0xcA3A2513fD277DF13b0F46FC8ED810dd8878f00A',
   abi: ABI,
 } as const;

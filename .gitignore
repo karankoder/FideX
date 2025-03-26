@@ -27,4 +27,5 @@ pnpm-lock.yaml
 ./myenv
 # local env files
 .env
+myenv
 .env\*.local

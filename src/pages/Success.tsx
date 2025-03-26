@@ -1,11 +1,11 @@
 import { useLocation, useNavigate } from 'react-router';
 import { QRCodeSVG } from 'qrcode.react';
 import { toPng } from 'html-to-image';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { daiContractConfig } from '@/services/contracts';
 import { useEthereum } from '@/services/ethereum/context.ts';
 
-const BASE_URL = 'process.env.BASE_URL as string;';
+const BASE_URL = import.meta.env.VITE_BASE_URL || '';
 
 export default function Success() {
   const location = useLocation();
@@ -16,6 +16,29 @@ export default function Success() {
   const navigate = useNavigate();
   const [userPoints, setUserPoints] = useState<number>(120);
   const { account, getZKsync } = useEthereum();
+  interface Product {
+    name: string;
+    price: string;
+  }
+
+  interface BusinessInfo {
+    name: string;
+    description: string;
+    rewardThreshold: number;
+    rewardAmount: number;
+    ownerAddress: string;
+    products: Product[];
+  }
+
+  const [businessInfo, setBusinessInfo] = useState<BusinessInfo>({
+    name: '',
+    description: '',
+    rewardThreshold: 0,
+    rewardAmount: 0,
+    ownerAddress: '',
+    products: [],
+  });
+
   const buy = async (indx: number): Promise<void> => {
     try {
       const zkSync = getZKsync();
@@ -26,19 +49,15 @@ export default function Success() {
       const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
 
       const receipt = await contract.methods
-        .buySomething(
-          parseInt(businessHash),
-          indx
-        )
+        .buySomething(parseInt(businessHash), indx)
         .send({ from: account.address || '' });
 
       console.log('Success:', receipt);
-   
     } catch (error) {
       console.error('Error :', error);
     }
     console.log('Done buying');
-  }
+  };
   const claim_reward = async () => {
     try {
       const zkSync = getZKsync();
@@ -49,9 +68,7 @@ export default function Success() {
       const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
 
       const receipt = await contract.methods
-        .claimReward(
-          parseInt(businessHash)
-        )
+        .claimReward(parseInt(businessHash))
         .send({ from: account.address || '' });
 
       console.log('Success:', receipt);
@@ -59,7 +76,7 @@ export default function Success() {
       console.error('Error ', error);
     }
     console.log('Done claim reward');
-  }
+  };
   const shutdown_business = async () => {
     try {
       const zkSync = getZKsync();
@@ -70,9 +87,7 @@ export default function Success() {
       const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
 
       const receipt = await contract.methods
-        .claimReward(
-          parseInt(businessHash)
-        )
+        .claimReward(parseInt(businessHash))
         .send({ from: account.address || '' });
 
       console.log('Success:', receipt);
@@ -80,7 +95,7 @@ export default function Success() {
       console.error('Error ', error);
     }
     console.log('Done  shutdown_business');
-  }
+  };
 
   const handleAssistant = (): void => {
     if (businessHash) {
@@ -105,7 +120,6 @@ export default function Success() {
         });
     }
   };
-  
 
   const handleShutdownBusiness = (): void => {
     shutdown_business();
@@ -122,19 +136,45 @@ export default function Success() {
     }
   };
 
-  const businessInfo = {
-    name: 'Demo Business',
-    description: 'This is a demo business description showcasing loyalty rewards.',
-    rewardThreshold: 100,
-    rewardAmount: 10,
-    ownerAddress: '0x1234567890abcdef1234567890abcdef12345678',
-  };
+  async function fetchBusinessesInfo() {
+    const zkSync = getZKsync();
+    try {
+      if (!zkSync) {
+        console.error('Provider not found');
+        return;
+      }
+      const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
+      const response: {
+        name: string;
+        businessContext: string;
+        rewardThreshold: string;
+        rewardAmount: string;
+        owner: string;
+        products: { name: string; price: string }[];
+      } = await contract.methods.getBusinesInfo(businessHash).call();
 
-  const products = [
-    { name: 'Product 1', price: '$20' },
-    { name: 'Product 2', price: '$35' },
-    { name: 'Product 3', price: '$50' },
-  ];
+      const parsedBusiness = {
+        name: response.name,
+        description: response.businessContext,
+        rewardThreshold: parseInt(response.rewardThreshold),
+        rewardAmount: parseInt(response.rewardAmount),
+        ownerAddress: response.owner,
+        products: response.products.map((product) => ({
+          name: product.name,
+          price: `$${product.price}`,
+        })),
+      };
+
+      setBusinessInfo(parsedBusiness);
+      console.log('Business details updated:', parsedBusiness);
+    } catch (error) {
+      console.error('Error fetching businesses:', error);
+    }
+  }
+
+  useEffect(() => {
+    fetchBusinessesInfo();
+  }, []);
 
   return (
     <div
@@ -144,6 +184,7 @@ export default function Success() {
       <h1 className='text-4xl text-[#FFAA00] font-semibold text-center mt-4'>
         Welcome to <span className='text-purple-500'>{businessInfo.name}</span>
       </h1>
+      {/* <p className='mt-4 text-lg text-[#B0B0B0]'>{businessInfo.description}</p> */}
 
       <div className='flex flex-col lg:flex-row w-full mt-8 px-10 gap-10'>
         <div className='flex-1'>
@@ -156,7 +197,7 @@ export default function Success() {
             </p>
             <p className='text-lg'>
               <span className='font-semibold text-[#FFAA00]'>Reward Amount:</span>{' '}
-              {businessInfo.rewardAmount}%
+              {businessInfo.rewardAmount} $
             </p>
             <p className='text-lg'>
               <span className='font-semibold text-[#FFAA00]'>Owner Address:</span>{' '}
@@ -175,7 +216,7 @@ export default function Success() {
                 </tr>
               </thead>
               <tbody>
-                {products.map((product, index) => (
+                {businessInfo.products.map((product, index) => (
                   <tr
                     key={index}
                     className={`${
@@ -185,7 +226,10 @@ export default function Success() {
                     <td className='px-4 py-2'>{product.name}</td>
                     <td className='px-4 py-2'>{product.price}</td>
                     <td className='px-4 py-2'>
-                      <button className='bg-[#8A2BE2] hover:bg-purple-600 text-white font-medium px-4 py-2 rounded-lg'>
+                      <button
+                        onClick={() => buy(index)}
+                        className='bg-[#8A2BE2] hover:bg-purple-600 text-white font-medium px-4 py-2 rounded-lg'
+                      >
                         Buy
                       </button>
                     </td>

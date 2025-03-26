@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router';
-import { FaRobot, FaUser, FaTrophy, FaDollarSign, FaTag } from 'react-icons/fa';
+import { FaRobot, FaUser, FaTrophy, FaDollarSign } from 'react-icons/fa';
 import socket from '../utils/socket';
 import { v4 as uuidv4 } from 'uuid';
 import { useEthereum } from '@/services/ethereum/context.ts';
@@ -18,12 +18,16 @@ interface MessageGroup {
   messages: Message[];
 }
 
+interface Product {
+  name: string;
+  price: string;
+}
+
 interface Business {
   name: string;
   owner: string;
   reward_threshold: string;
   reward_amount: string;
-  product_price: string;
 }
 
 export default function Checkout() {
@@ -52,7 +56,7 @@ export default function Checkout() {
       const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
 
       const receipt = await contract.methods
-        .buySomething(parseInt(businessHash), 0)
+        .buySomething(parseInt(businessHash || '0'), 0)
         .send({ from: account.address || '' });
 
       console.log('Success:', receipt);
@@ -71,7 +75,7 @@ export default function Checkout() {
       const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
 
       const receipt = await contract.methods
-        .claimReward(parseInt(businessHash))
+        .claimReward(parseInt(businessHash || '0'))
         .send({ from: account.address || '' });
 
       console.log('Success:', receipt);
@@ -90,7 +94,7 @@ export default function Checkout() {
       const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
 
       const receipt = await contract.methods
-        .claimReward(parseInt(businessHash))
+        .claimReward(parseInt(businessHash || '0'))
         .send({ from: account.address || '' });
 
       console.log('Success:', receipt);
@@ -100,10 +104,21 @@ export default function Checkout() {
     console.log('Done  shutdown_business');
   };
 
-  const addNewMessage = (author, content) => {
-    const groups = messageGroupsRef.current;
+  interface NewMessage {
+    content: string;
+    id: string;
+  }
+
+  interface NewMessageGroup {
+    author: 'ai' | 'user';
+    messages: NewMessage[];
+    id: string;
+  }
+
+  const addNewMessage = (author: 'ai' | 'user', content: string): void => {
+    const groups: MessageGroup[] = messageGroupsRef.current;
     if (groups.length > 0) {
-      const lastMessageGroup = { ...groups[groups.length - 1] };
+      const lastMessageGroup: MessageGroup = { ...groups[groups.length - 1] };
       if (lastMessageGroup.author === author) {
         lastMessageGroup.messages.push({ content, id: uuidv4() });
         setMessageGroups((oldGroups) => [...oldGroups.slice(0, -1), lastMessageGroup]);
@@ -116,10 +131,14 @@ export default function Checkout() {
     ]);
   };
 
-  async function txnfunction(txnhash) {
+  async function txnfunction(txnhash: string) {
     const provider = Provider.getDefaultProvider(types.Network.Sepolia);
     const contract = new Contract(daiContractConfig.address, daiContractConfig.abi, provider);
     const receipt = await provider.getTransactionReceipt(txnhash);
+    if (!receipt) {
+      console.error('Transaction receipt is null');
+      return;
+    }
     const events = receipt.logs;
     const parsedEvents = events
       .map((log) => {
@@ -157,7 +176,7 @@ export default function Checkout() {
       }
     }
   }
-  function extractTransactionHashes(content) {
+  function extractTransactionHashes(content: string) {
     const regex = /[a-zA-Z0-9]{31,}/g;
     const matches = [];
     let match;
@@ -182,7 +201,8 @@ export default function Checkout() {
         inputs[i + 4] == 't'
       ) {
         inputs += `.`;
-        inputs += `{ "arguments" : {"Business Number":${businessHash},"userId hash": ${signedAccountId} }}`;
+        const signedAccountId = account?.address || 'unknown';
+        inputs += `{ "arguments" : {"Business Number":${businessHash},"userId hash": "${signedAccountId}" }}`;
         break;
       }
     }
@@ -198,75 +218,97 @@ export default function Checkout() {
     }
   };
 
-  const listenToContractEvents = async () => {
-    const provider = Provider.getDefaultProvider(types.Network.Sepolia);
-    const contract = new Contract(daiContractConfig.address, daiContractConfig.abi, provider);
-    const receipt = await provider.getTransactionReceipt(
-      '0x43de8ef803278ac1bc7953016373f1d998d52d273deeaee46e7c21ac9fe0e8b7'
-    );
-    const events = receipt.logs;
-    const parsedEvents = events
-      .map((log) => {
-        try {
-          return contract.interface.parseLog(log);
-        } catch (error) {
-          console.error('Failed to parse log:', log, error);
-          return null;
-        }
-      })
-      .filter((event) => event !== null);
+  // const listenToContractEvents = async () => {
+  //   const provider = Provider.getDefaultProvider(types.Network.Sepolia);
+  //   const contract = new Contract(daiContractConfig.address, daiContractConfig.abi, provider);
+  //   const receipt = await provider.getTransactionReceipt(
+  //     '0x43de8ef803278ac1bc7953016373f1d998d52d273deeaee46e7c21ac9fe0e8b7'
+  //   );
+  //   const events = receipt.logs;
+  //   const parsedEvents = events
+  //     .map((log) => {
+  //       try {
+  //         return contract.interface.parseLog(log);
+  //       } catch (error) {
+  //         console.error('Failed to parse log:', log, error);
+  //         return null;
+  //       }
+  //     })
+  //     .filter((event) => event !== null);
 
-    console.log('Parsed events:', parsedEvents);
+  //   console.log('Parsed events:', parsedEvents);
 
-    const eventNamesToCheck = [
-      'BuyEvent',
-      'UpdateRewardConfig',
-      'ClaimRewardEvent',
-      'BusinessShutdownEvent',
-    ];
-    let matchedEvent = null;
+  //   const eventNamesToCheck = [
+  //     'BuyEvent',
+  //     'UpdateRewardConfig',
+  //     'ClaimRewardEvent',
+  //     'BusinessShutdownEvent',
+  //   ];
+  //   let matchedEvent = null;
 
-    for (const event of parsedEvents) {
-      if (event && eventNamesToCheck.some((name) => event.name.includes(name))) {
-        matchedEvent = event;
-        console.log('Matched Event:', matchedEvent.name);
+  //   for (const event of parsedEvents) {
+  //     if (event && eventNamesToCheck.some((name) => event.name.includes(name))) {
+  //       matchedEvent = event;
+  //       console.log('Matched Event:', matchedEvent.name);
 
-        // if (matchedEvent.name === 'UpdateRewardConfigEvent') {
-        //   console.log('Handling UpdateRewardConfigEvent:', matchedEvent.args[0]);
-        //   // Add logic to handle the event, e.g., updating state or notifying the user
-        //   alert(`Reward configuration updated: ${matchedEvent.args[0]}`);
-        // }
-        break;
+  //       // if (matchedEvent.name === 'UpdateRewardConfigEvent') {
+  //       //   console.log('Handling UpdateRewardConfigEvent:', matchedEvent.args[0]);
+  //       //   // Add logic to handle the event, e.g., updating state or notifying the user
+  //       //   alert(`Reward configuration updated: ${matchedEvent.args[0]}`);
+  //       // }
+  //       break;
+  //     }
+  //   }
+  // };
+  async function fetchBusinessesInfo() {
+    const zkSync = getZKsync();
+    try {
+      if (!zkSync) {
+        console.error('Provider not found');
+        return;
       }
+      const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
+      const response: {
+        owner: string;
+        name: string;
+        rewardThreshold: number;
+        rewardAmount: number;
+      } = await contract.methods.getBusinesInfo(businessHash).call();
+      console.log(response);
+      const parsedBusiness: Business = {
+        owner: response.owner,
+        name: response.name,
+        reward_threshold: `${response.rewardThreshold} points`,
+        reward_amount: `$${response.rewardAmount}`,
+      };
+
+      setBusiness(parsedBusiness);
+      console.log('Business details updated:', parsedBusiness);
+    } catch (error) {
+      console.error('Error fetching businesses:', error);
     }
-  };
+  }
 
   useEffect(() => {
     socket.connect();
     console.log('socket', socket);
-    setBusiness({
-      name: 'Demo Business',
-      owner: '0x1234567890abcdef1234567890abcdef12345678',
-      reward_threshold: '500 points',
-      reward_amount: '$50',
-      product_price: '$20',
-    });
+    fetchBusinessesInfo();
     const onResponse = async (value) => {
       const txnhashes = extractTransactionHashes(value);
       console.log('txnhashes', txnhashes);
       if (txnhashes != null) {
         for (const txnhash of txnhashes) {
           console.log('txnhash', txnhash);
-          const methodNames = await txnfunction(txnhash);
-          console.log(methodNames);
-          if (methodNames[0] === 'RegisterBusinessEvent') {
+          const methodName = await txnfunction(txnhash);
+          console.log(methodName);
+          if (methodName === 'RegisterBusinessEvent') {
             console.log('RegisterBusinessEvent');
             navigate('/launch');
-          } else if (methodNames[0] === 'BuyEvent') {
+          } else if (methodName === 'BuyEvent') {
             buy();
-          } else if (methodNames[0] === 'ClaimRewardEvent') {
+          } else if (methodName === 'ClaimRewardEvent') {
             claim_reward();
-          } else if (methodNames[0] === 'BusinessShutdownEvent') {
+          } else if (methodName === 'BusinessShutdownEvent') {
             shutdown_business();
           }
         }
@@ -276,7 +318,6 @@ export default function Checkout() {
 
     socket.on('response', onResponse);
 
-    listenToContractEvents();
     return () => {
       socket.off('response', onResponse);
       socket.disconnect();
@@ -312,13 +353,6 @@ export default function Checkout() {
                   <div className='text-right'>
                     <span className='block font-bold text-[#FFAA00]'>Reward Amount</span>
                     <span className='text-[#F0F0F0]'>{business.reward_amount}</span>
-                  </div>
-                </div>
-                <div className='flex items-center justify-between bg-[#2C2C2C] p-3 rounded-lg shadow-md'>
-                  <FaTag className='text-[#FFAA00] text-xl' />
-                  <div className='text-right'>
-                    <span className='block font-bold text-[#FFAA00]'>Product Price</span>
-                    <span className='text-[#F0F0F0]'>{business.product_price}</span>
                   </div>
                 </div>
               </div>
