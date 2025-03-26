@@ -1,5 +1,5 @@
-import { io } from "socket.io-client";
+import { io } from 'socket.io-client';
 
 // const socket = io("https://b8sxbhp0-3001.inc1.devtunnels.ms/");
-const socket = io("http://localhost:3001/");
+const socket = io('https://18zxdhrs-3001.inc1.devtunnels.ms/');
 export default socket;
