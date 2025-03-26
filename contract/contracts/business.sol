@@ -85,7 +85,7 @@ contract FedX {
     // transactions[businessHash].push(
     //   Transaction({ user: user, amount: msg.value, timestamp: block.timestamp })
     // );
-    // userPoints[businessHash][user] += 1;
+    userPoints[businessHash][user] += 1;
     // payable(businesses[businessHash].owner).transfer(msg.value);
     // (bool success, ) = payable(businesses[businessHash].owner).call{ value: msg.value }('');
     // require(success, 'Transfer failed');
@@ -104,17 +104,16 @@ contract FedX {
   }
 
   function claimReward(uint16 businessHash) external returns (string memory) {
+    
+    // require(
+    //   userPoints[businessHash][msg.sender] >= business.rewardThreshold,
+    //   'Insufficient points'
+    // );
     Business storage business = businesses[businessHash];
-    require(
-      userPoints[businessHash][msg.sender] >= business.rewardThreshold,
-      'Insufficient points'
-    );
 
-    userPoints[businessHash][msg.sender] -= business.rewardThreshold;
+    payable(msg.sender).transfer(business.rewardAmount);
 
-    // payable(msg.sender).transfer(business.rewardAmount);
-
-    // (bool success, ) = payable(msg.sender).call{ value: business.rewardAmount }('');
+    (bool success, ) = payable(msg.sender).call{ value: business.rewardAmount }('');
 
     // require(success, 'Reward transfer failed');
     return 'Reward claimed';

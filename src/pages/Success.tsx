@@ -53,7 +53,7 @@ export default function Success() {
       console.log('account:', account.address);
       console.log('indx:', indx);
       const receipt = await contract.methods
-        .buySomething2(parseInt(businessHash), indx)
+        .buySomething2(parseInt(businessHash || '0'), indx)
         .send({ from: account.address || '' });
 
       console.log('Success:', receipt);
@@ -73,7 +73,7 @@ export default function Success() {
       const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
 
       const receipt = await contract.methods
-        .claimReward(parseInt(businessHash))
+        .claimReward(parseInt(businessHash || '0'))
         .send({ from: account.address || '' });
 
       console.log('Success:', receipt);
@@ -92,7 +92,7 @@ export default function Success() {
       const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
 
       const receipt = await contract.methods
-        .shutdownBusiness(parseInt(businessHash))
+        .shutdownBusiness(parseInt(businessHash || '0'))
         .send({ from: account.address || '' });
 
       console.log('Success:', receipt);
@@ -184,7 +184,7 @@ export default function Success() {
       const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
       console.log('Account address:', account.address);
       const points: string = await contract.methods
-        .getPoints(parseInt(businessHash), account.address)
+        .getPoints(parseInt(businessHash || '0'), account.address)
         .call();
       // console.log('Points:', points);
       setUserPoints(parseInt(points));
