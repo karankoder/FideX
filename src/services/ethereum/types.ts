@@ -8,10 +8,11 @@ export type EthereumContextValue = {
   connect: () => void;
   disconnect: () => void;
   getZKsync: () => ZKsyncPlugin | null;
+  getProvider: () => typeof window.ethereum | undefined;
 };
 
 export type Account =
   | { isConnected: true; address: string }
   | { isConnected: false; address: null };
 
-export type Network = Chain | null
+export type Network = Chain | null;

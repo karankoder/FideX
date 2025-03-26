@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import LoyaltyForm from '@/components/LoyaltyForm';
 import { useNavigate } from 'react-router';
-import { FormEvent, useCallback } from 'react';
 import { useEthereum } from '@/services/ethereum/context.ts';
 import { daiContractConfig } from '@/services/contracts.ts';
 

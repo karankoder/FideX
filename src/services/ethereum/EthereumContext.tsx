@@ -103,7 +103,8 @@ export const EthereumContextProvider = ({ children }: { children: ReactNode }) =
           params: [{ chainId: hexChainId }],
         });
       } catch (error) {
-        if ((error as any)?.code === 4902) { // 4902 - chain not added
+        if ((error as any)?.code === 4902) {
+          // 4902 - chain not added
           ctx?.request({
             method: 'wallet_addEthereumChain',
             params: [
@@ -127,6 +128,8 @@ export const EthereumContextProvider = ({ children }: { children: ReactNode }) =
 
   const getZKsync = () => zkSyncPlugin;
 
+  const getProvider = () => getEthereumContext();
+
   return (
     <EthereumContext.Provider
       value={{
@@ -136,6 +139,7 @@ export const EthereumContextProvider = ({ children }: { children: ReactNode }) =
         connect,
         disconnect: () => onAccountChange([]),
         getZKsync,
+        getProvider,
       }}
     >
       {children}

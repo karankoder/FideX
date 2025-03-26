@@ -2,65 +2,9 @@ import logo from '@/assets/home-logo.png';
 import { useNavigate } from 'react-router';
 import Ripples from 'react-ripples';
 import { FC, useEffect } from 'react';
-// import { Provider, Contract, types } from 'zksync-ethers';
-
-// import { daiContractConfig } from '@/services/contracts';
-// import { ethers } from 'ethers';
 
 const Home: FC = () => {
   const navigate = useNavigate();
-  // useEffect(() => {
-  //   const listenToContractEvents = async () => {
-  //     // Initialize provider
-  //     const provider = Provider.getDefaultProvider(types.Network.Sepolia);
-  //     console.log('Provider:', provider);
-  //     const contract = new Contract(daiContractConfig.address, daiContractConfig.abi, provider);
-
-  //     // const currentBlock = await provider.getBlockNumber();
-  //     // const fromBlock = currentBlock - 1000;
-
-  //     // const pastEvents = await contract.queryFilter(contract.filters.BuyEvent(), fromBlock);
-
-  //     // console.log(`Found ${pastEvents.length} past events`);
-
-  //     // // Process past events
-  //     // pastEvents.forEach((event) => {
-  //     //   console.log('Past event:', {
-  //     //     blockNumber: event.blockNumber,
-  //     //     params: event.args,
-  //     //     transactionHash: event.transactionHash,
-  //     //   });
-  //     // });
-
-  //     const receipt = await provider.getTransactionReceipt(
-  //       '0xd13499476b5786e444bdc1724281b9de69f60686b3cabb8d14a8d313fa6e1b1a'
-  //     );
-  //     const events = receipt.logs;
-
-  //     console.log('Transaction receipt:', receipt);
-  //     console.log('Events:', events);
-  //     const parsedEvents = events.map((log) => contract.interface.parseLog(log));
-  //     console.log('Parsed events:', parsedEvents);
-  //     console.log(receipt.logs);
-
-  //     // Contract address and ABI
-
-  //     // Create contract instance
-
-  //     console.log('Contract:', contract);
-  //     const filter = contract.filters.BuyEvent();
-  //     console.log('Filter:', filter);
-  //     // Listen to a specific event
-  //     contract.on(filter, (message, event) => {
-  //       console.log('Event received:', {
-  //         message: message,
-  //         transactionHash: event.transactionHash,
-  //       });
-  //     });
-  //   };
-  //   console.log('Listening to contract events...');
-  //   listenToContractEvents();
-  // }, []);
 
   return (
     <div

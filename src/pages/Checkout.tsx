@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { FaRobot, FaUser, FaTrophy, FaDollarSign, FaTag } from 'react-icons/fa';
-import socket from "../utils/socket";
-import { v4 as uuidv4 } from "uuid";
+import socket from '../utils/socket';
+import { v4 as uuidv4 } from 'uuid';
 import { useEthereum } from '@/services/ethereum/context.ts';
 import { daiContractConfig } from '@/services/contracts.ts';
+import { Provider, Contract, types } from 'zksync-ethers';
 
 interface Message {
   id?: string;
@@ -34,7 +35,7 @@ export default function Checkout() {
     },
   ]);
   const [business, setBusiness] = useState<Business | null>(null);
-  const { account, getZKsync } = useEthereum();
+  const { account, getZKsync, getProvider } = useEthereum();
   const navigate = useNavigate();
   const location = useLocation();
   const businessHash = new URLSearchParams(location.search).get('businessHash');
@@ -51,19 +52,15 @@ export default function Checkout() {
       const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
 
       const receipt = await contract.methods
-        .buySomething(
-          parseInt(businessHash),
-          0
-        )
+        .buySomething(parseInt(businessHash), 0)
         .send({ from: account.address || '' });
 
       console.log('Success:', receipt);
-   
     } catch (error) {
       console.error('Error :', error);
     }
     console.log('Done buying');
-  }
+  };
   const claim_reward = async () => {
     try {
       const zkSync = getZKsync();
@@ -74,9 +71,7 @@ export default function Checkout() {
       const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
 
       const receipt = await contract.methods
-        .claimReward(
-          parseInt(businessHash)
-        )
+        .claimReward(parseInt(businessHash))
         .send({ from: account.address || '' });
 
       console.log('Success:', receipt);
@@ -84,7 +79,7 @@ export default function Checkout() {
       console.error('Error ', error);
     }
     console.log('Done claim reward');
-  }
+  };
   const shutdown_business = async () => {
     try {
       const zkSync = getZKsync();
@@ -95,9 +90,7 @@ export default function Checkout() {
       const contract = new zkSync.L2.eth.Contract(daiContractConfig.abi, daiContractConfig.address);
 
       const receipt = await contract.methods
-        .claimReward(
-          parseInt(businessHash)
-        )
+        .claimReward(parseInt(businessHash))
         .send({ from: account.address || '' });
 
       console.log('Success:', receipt);
@@ -105,42 +98,152 @@ export default function Checkout() {
       console.error('Error ', error);
     }
     console.log('Done  shutdown_business');
-  }
+  };
 
   const addNewMessage = (author, content) => {
     const groups = messageGroupsRef.current;
     if (groups.length > 0) {
-        const lastMessageGroup = { ...groups[groups.length - 1] };
-        if (lastMessageGroup.author === author) {
-            lastMessageGroup.messages.push({ content, id: uuidv4() });
-            setMessageGroups((oldGroups) => [...oldGroups.slice(0, -1), lastMessageGroup]);
-            return;
-        }
+      const lastMessageGroup = { ...groups[groups.length - 1] };
+      if (lastMessageGroup.author === author) {
+        lastMessageGroup.messages.push({ content, id: uuidv4() });
+        setMessageGroups((oldGroups) => [...oldGroups.slice(0, -1), lastMessageGroup]);
+        return;
+      }
     }
     setMessageGroups((oldMessageGroups) => [
-        ...oldMessageGroups,
-        { author, messages: [{ content, id: uuidv4() }], id: uuidv4() },
+      ...oldMessageGroups,
+      { author, messages: [{ content, id: uuidv4() }], id: uuidv4() },
     ]);
   };
 
   async function txnfunction(txnhash) {
-      
+    const provider = Provider.getDefaultProvider(types.Network.Sepolia);
+    const contract = new Contract(daiContractConfig.address, daiContractConfig.abi, provider);
+    const receipt = await provider.getTransactionReceipt(txnhash);
+    const events = receipt.logs;
+    const parsedEvents = events
+      .map((log) => {
+        try {
+          return contract.interface.parseLog(log);
+        } catch (error) {
+          console.error('Failed to parse log:', log, error);
+          return null;
+        }
+      })
+      .filter((event) => event !== null);
+
+    console.log('Parsed events:', parsedEvents);
+
+    const eventNamesToCheck = [
+      'BuyEvent',
+      'UpdateRewardConfig',
+      'ClaimRewardEvent',
+      'BusinessShutdownEvent',
+      'RegisterBusinessEvent',
+    ];
+    let matchedEvent = null;
+
+    for (const event of parsedEvents) {
+      if (event && eventNamesToCheck.some((name) => event.name.includes(name))) {
+        matchedEvent = event;
+        console.log('Matched Event:', matchedEvent.name);
+        return matchedEvent.name;
+
+        // if (matchedEvent.name === 'UpdateRewardConfigEvent') {
+        //   console.log('Handling UpdateRewardConfigEvent:', matchedEvent.args[0]);
+        //   // Add logic to handle the event, e.g., updating state or notifying the user
+        //   alert(`Reward configuration updated: ${matchedEvent.args[0]}`);
+        // }
+      }
+    }
   }
   function extractTransactionHashes(content) {
     const regex = /[a-zA-Z0-9]{31,}/g;
     const matches = [];
     let match;
     while ((match = regex.exec(content)) !== null) {
-        matches.push(match[0]);
+      matches.push(match[0]);
     }
-  
+
     return matches.length > 0 ? matches : null;
   }
-  
+
+  async function handleSend() {
+    const trimmedInput = input.trim();
+    if (trimmedInput === '') return;
+    let inputs = trimmedInput;
+    console.log('trimmed', inputs.length);
+    for (let i = 0; i < inputs.length - 4; i++) {
+      if (
+        inputs[i] == 'p' &&
+        inputs[i + 1] == 'o' &&
+        inputs[i + 2] == 'i' &&
+        inputs[i + 3] == 'n' &&
+        inputs[i + 4] == 't'
+      ) {
+        inputs += `.`;
+        inputs += `{ "arguments" : {"Business Number":${businessHash},"userId hash": ${signedAccountId} }}`;
+        break;
+      }
+    }
+    console.log('input string', inputs);
+    socket.emit('message', inputs);
+    addNewMessage('user', trimmedInput);
+    setInput('');
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSend();
+    }
+  };
+
+  const listenToContractEvents = async () => {
+    const provider = Provider.getDefaultProvider(types.Network.Sepolia);
+    const contract = new Contract(daiContractConfig.address, daiContractConfig.abi, provider);
+    const receipt = await provider.getTransactionReceipt(
+      '0x43de8ef803278ac1bc7953016373f1d998d52d273deeaee46e7c21ac9fe0e8b7'
+    );
+    const events = receipt.logs;
+    const parsedEvents = events
+      .map((log) => {
+        try {
+          return contract.interface.parseLog(log);
+        } catch (error) {
+          console.error('Failed to parse log:', log, error);
+          return null;
+        }
+      })
+      .filter((event) => event !== null);
+
+    console.log('Parsed events:', parsedEvents);
+
+    const eventNamesToCheck = [
+      'BuyEvent',
+      'UpdateRewardConfig',
+      'ClaimRewardEvent',
+      'BusinessShutdownEvent',
+    ];
+    let matchedEvent = null;
+
+    for (const event of parsedEvents) {
+      if (event && eventNamesToCheck.some((name) => event.name.includes(name))) {
+        matchedEvent = event;
+        console.log('Matched Event:', matchedEvent.name);
+
+        // if (matchedEvent.name === 'UpdateRewardConfigEvent') {
+        //   console.log('Handling UpdateRewardConfigEvent:', matchedEvent.args[0]);
+        //   // Add logic to handle the event, e.g., updating state or notifying the user
+        //   alert(`Reward configuration updated: ${matchedEvent.args[0]}`);
+        // }
+        break;
+      }
+    }
+  };
+
   useEffect(() => {
-    // Dummy business data for demo purposes
     socket.connect();
-    console.log("socket", socket);
+    console.log('socket', socket);
     setBusiness({
       name: 'Demo Business',
       owner: '0x1234567890abcdef1234567890abcdef12345678',
@@ -150,36 +253,34 @@ export default function Checkout() {
     });
     const onResponse = async (value) => {
       const txnhashes = extractTransactionHashes(value);
-      console.log("txnhashes", txnhashes);
+      console.log('txnhashes', txnhashes);
       if (txnhashes != null) {
-          for (const txnhash of txnhashes) {
-              console.log("txnhash", txnhash);
-              const methodNames = await txnfunction(txnhash);
-              console.log(methodNames);
-              if (methodNames[0] === "RegisterBusinessEvent") {
-                  console.log("RegisterBusinessEvent");
-                  navigate("/launch");
-              }
-              else if (methodNames[0] === "BuyEvent") {
-                  buy();
-              }
-              else if (methodNames[0] === "ClaimRewardEvent") {
-                  claim_reward();
-              }
-              else if (methodNames[0] === "BusinessShutdownEvent") {
-                  shutdown_business();
-              }
+        for (const txnhash of txnhashes) {
+          console.log('txnhash', txnhash);
+          const methodNames = await txnfunction(txnhash);
+          console.log(methodNames);
+          if (methodNames[0] === 'RegisterBusinessEvent') {
+            console.log('RegisterBusinessEvent');
+            navigate('/launch');
+          } else if (methodNames[0] === 'BuyEvent') {
+            buy();
+          } else if (methodNames[0] === 'ClaimRewardEvent') {
+            claim_reward();
+          } else if (methodNames[0] === 'BusinessShutdownEvent') {
+            shutdown_business();
           }
+        }
       }
-      addNewMessage("ai", value);
-  };
+      addNewMessage('ai', value);
+    };
 
-  socket.on("response", onResponse);
+    socket.on('response', onResponse);
 
-  return () => {
-      socket.off("response", onResponse);
+    listenToContractEvents();
+    return () => {
+      socket.off('response', onResponse);
       socket.disconnect();
-  };
+    };
   }, []);
 
   return (
@@ -276,6 +377,7 @@ export default function Checkout() {
             className='flex-1 bg-[#1E1E1E] py-3 text-gray-300 px-5 border-1 border-[#00FFFF] placeholder-gray-500 rounded-4xl focus:outline-none focus:ring-1 focus:ring-[#00FFFF]'
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyPress}
           />
         </div>
       </div>
