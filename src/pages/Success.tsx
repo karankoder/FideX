@@ -77,11 +77,14 @@ export default function Success() {
         .send({ from: account.address || '' });
 
       console.log('Success:', receipt);
+
+      fetchUserPoints();
     } catch (error) {
       console.error('Error ', error);
     }
     console.log('Done claim reward');
   };
+
   const shutdown_business = async () => {
     try {
       const zkSync = getZKsync();
@@ -197,7 +200,7 @@ export default function Success() {
   useEffect(() => {
     fetchBusinessesInfo();
     fetchUserPoints();
-  }, [zkSync, account, userPoints]);
+  }, [zkSync, account]);
 
   return (
     <div
@@ -207,8 +210,6 @@ export default function Success() {
       <h1 className='text-4xl text-[#FFAA00] font-semibold text-center mt-4'>
         Welcome to <span className='text-purple-500'>{businessInfo.name}</span>
       </h1>
-      {/* <p className='mt-4 text-lg text-[#B0B0B0]'>{businessInfo.description}</p> */}
-
       <div className='flex flex-col lg:flex-row w-full mt-8 px-10 gap-10'>
         <div className='flex-1'>
           <h2 className='text-2xl font-semibold text-[#FFAA00]'>Business Information</h2>
