@@ -104,14 +104,10 @@ Customers can:
 - Finetuning the ai assistant as per our platform's requirements.
 - Creating a seamless UX that bridges Web2 and Web3
 
-## Contract Address
-
-Contract address- lx9.testnet
-
 ## What's next for Fidex
 - Enhanced AI capabilities: Implement personalized recommendation systems that analyze customer purchase history and preferences to suggest relevant products and optimize reward strategies.
 - Cross-business rewards: Enable businesses to form partnerships and allow customers to earn and redeem points across multiple participating merchants.
-
+- 
 ## Contributing
 
 We welcome contributions to enhance and expand our platform! If you're passionate about Web3, decentralized applications, or event management, join us in building the future of event hosting.
