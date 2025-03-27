@@ -16,46 +16,6 @@ The inspiration behind this platform comes from the need to modernize and decent
 
 ## Getting started
 
-### Set the local LLM for the AI agent:
-
-```bash
-# Install llama.cpp
-brew install llama.cpp
-
-# Install the Hugging Face library
-pip install huggingface_hub
-
-# Login to your Hugging Face account
-huggingface-cli login
-
-# get the model from Hugging Face
-huggingface-cli download NousResearch/Hermes-2-Pro-Llama-3-8B-GGUF Hermes-2-Pro-Llama-3-8B-Q4_K_M.gguf --local-dir model
-
-# run the model with llama.cpp
-llama-server -m ./model/Hermes-2-Pro-Llama-3-8B-Q4_K_M.gguf
-```
-
-### If you want the llm to run with GPU acceleration (Optional):
-
-Set up llama.cpp in this way:
-
-```bash
-# Clone the llama.cpp repo, and configure it for gpu acceleration
-git clone https://github.com/ggerganov/llama.cpp.git
-cd llama.cpp
-mkdir build
-cd build
-cmake .. -DGGML_CUDA=ON
-cmake --build . --config Release
-
-# Run the model locally at port 8080 with the llama-server
-# pwd: llama.cpp/build/bin
-./llama-server -m /home/<USER>/model/<MODEL-NAME> --n-gpu-layers 50
-
-# Monitor the gpu stats
-gpustat -i
-```
-
 ### Execute the ai-assistant backend:
 
 ```bash
@@ -69,14 +29,6 @@ poetry install
 # Run the python backend
 cd ai-assistant/ai
 poetry run python3 src/main.py
-```
-
-### Execute the client service
-
-```bash
-# pwd: ./Fidex
-pnpm i
-pnpm dev
 ```
 
 Give the llm url in file general.yaml under folder ai-assistant/ai/config
