@@ -97,11 +97,6 @@ Customers can:
 - Interact with businesses through an AI chat interface
 - Redeem rewards automatically through smart contracts
 
-## Technologies used
-
-- Hugging Face: We are running [NousResearch/Hermes-2-Pro-Llama-3-8B-GGUF](https://huggingface.co/NousResearch/Hermes-2-Pro-Llama-3-8B-GGUF) llm model locally on system with the help of `llama.cpp` with cuda-toolkit for gpu acceleration to serve as a base layer AI model for ai-assitant
-
-- AI Assistant: Core of the agentic-ai
 
 ## Challenges we ran into
 
@@ -109,25 +104,11 @@ Customers can:
 - Finetuning the ai assistant as per our platform's requirements.
 - Creating a seamless UX that bridges Web2 and Web3
 
-## Benchmarks
-
-To run quatitative bechmarks of our AI agent, run the following command:
-
-```bash
-# pwd: ./benchmarks
-python3 run.py
-```
-
-The final metrics of latency, throughput and command_distribution benchmarks are stored in `./results` folder, along with the cummulative results of the tests in `./results/final_report.csv`
-
 ## Contract Address
 
 Contract address- lx9.testnet
 
 ## What's next for Fidex
-
-- Multi-chain support: Expand beyond Base to include other EVM-compatible chains like Ethereum mainnet, Polygon, and Arbitrum, allowing businesses to choose their preferred network.
-- Production deployment: Launch on Base mainnet with a focus on onboarding small to medium-sized businesses in the food and retail sectors.
 - Enhanced AI capabilities: Implement personalized recommendation systems that analyze customer purchase history and preferences to suggest relevant products and optimize reward strategies.
 - Cross-business rewards: Enable businesses to form partnerships and allow customers to earn and redeem points across multiple participating merchants.
 
