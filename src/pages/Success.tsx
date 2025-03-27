@@ -197,7 +197,7 @@ export default function Success() {
   useEffect(() => {
     fetchBusinessesInfo();
     fetchUserPoints();
-  }, [zkSync, account]);
+  }, [zkSync, account, userPoints]);
 
   return (
     <div

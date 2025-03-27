@@ -57,7 +57,7 @@ export default function Checkout() {
 
       const receipt = await contract.methods
         .buySomething2(parseInt(businessHash || '0'), 0)
-        .send({ from: account.address || '' ,value: "1000000000000000000"});
+        .send({ from: account.address || '', value: '1000000000000000000' });
 
       console.log('Success:', receipt);
     } catch (error) {
@@ -218,48 +218,6 @@ export default function Checkout() {
     }
   };
 
-  // const listenToContractEvents = async () => {
-  //   const provider = Provider.getDefaultProvider(types.Network.Sepolia);
-  //   const contract = new Contract(daiContractConfig.address, daiContractConfig.abi, provider);
-  //   const receipt = await provider.getTransactionReceipt(
-  //     '0x43de8ef803278ac1bc7953016373f1d998d52d273deeaee46e7c21ac9fe0e8b7'
-  //   );
-  //   const events = receipt.logs;
-  //   const parsedEvents = events
-  //     .map((log) => {
-  //       try {
-  //         return contract.interface.parseLog(log);
-  //       } catch (error) {
-  //         console.error('Failed to parse log:', log, error);
-  //         return null;
-  //       }
-  //     })
-  //     .filter((event) => event !== null);
-
-  //   console.log('Parsed events:', parsedEvents);
-
-  //   const eventNamesToCheck = [
-  //     'BuyEvent',
-  //     'UpdateRewardConfig',
-  //     'ClaimRewardEvent',
-  //     'BusinessShutdownEvent',
-  //   ];
-  //   let matchedEvent = null;
-
-  //   for (const event of parsedEvents) {
-  //     if (event && eventNamesToCheck.some((name) => event.name.includes(name))) {
-  //       matchedEvent = event;
-  //       console.log('Matched Event:', matchedEvent.name);
-
-  //       // if (matchedEvent.name === 'UpdateRewardConfigEvent') {
-  //       //   console.log('Handling UpdateRewardConfigEvent:', matchedEvent.args[0]);
-  //       //   // Add logic to handle the event, e.g., updating state or notifying the user
-  //       //   alert(`Reward configuration updated: ${matchedEvent.args[0]}`);
-  //       // }
-  //       break;
-  //     }
-  //   }
-  // };
   async function fetchBusinessesInfo() {
     const zkSync = getZKsync();
     try {
@@ -407,7 +365,7 @@ export default function Checkout() {
         <div className='w-full flex items-center gap-8 pt-5 border-t-2 border-[#35445A]'>
           <input
             type='text'
-            placeholder='Chat with the assistant....'
+            placeholder='I want to register a business....'
             className='flex-1 bg-[#1E1E1E] py-3 text-gray-300 px-5 border-1 border-[#00FFFF] placeholder-gray-500 rounded-4xl focus:outline-none focus:ring-1 focus:ring-[#00FFFF]'
             value={input}
             onChange={(e) => setInput(e.target.value)}

@@ -33,6 +33,17 @@ poetry run python3 src/main.py
 
 Give the llm url in file general.yaml under folder ai-assistant/ai/config
 
+### Start the frontend:
+
+```bash
+
+# Install dependencies
+yarn
+
+# Start the development server
+yarn dev
+```
+
 ## What it does
 
 Fidex is a decentralised loayalty program platform that allows businesses to:
@@ -49,7 +60,6 @@ Customers can:
 - Interact with businesses through an AI chat interface
 - Redeem rewards automatically through smart contracts
 
-
 ## Challenges we ran into
 
 - Handling/catching real time event emissions from the smart contracts
@@ -57,9 +67,11 @@ Customers can:
 - Creating a seamless UX that bridges Web2 and Web3
 
 ## What's next for Fidex
+
 - Enhanced AI capabilities: Implement personalized recommendation systems that analyze customer purchase history and preferences to suggest relevant products and optimize reward strategies.
 - Cross-business rewards: Enable businesses to form partnerships and allow customers to earn and redeem points across multiple participating merchants.
-- 
+-
+
 ## Contributing
 
 We welcome contributions to enhance and expand our platform! If you're passionate about Web3, decentralized applications, or event management, join us in building the future of event hosting.
