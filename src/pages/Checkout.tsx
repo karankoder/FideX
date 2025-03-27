@@ -321,8 +321,16 @@ export default function Checkout() {
             </div>
           )
         ) : (
-          <div className='flex items-center justify-center h-full'>
-            <span className='text-[#FFAA00] text-xl'>Welcome to the AI Assistant</span>
+          <div className='flex flex-col items-center justify-center h-full text-center'>
+            <span className='text-[#FFAA00] text-xl mb-4'>Welcome to the AI Assistant</span>
+            <p className='text-[#F0F0F0] text-lg'>
+              This is the main chat assistant. For any business-configured assistant, please go to
+              the{' '}
+              <a href='/businesses' className='text-[#FFAA00] font-semibold underline'>
+                Business
+              </a>{' '}
+              section and open it from there.
+            </p>
           </div>
         )}
       </div>
